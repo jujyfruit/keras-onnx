@@ -89,8 +89,9 @@ class Operator:
         return self.attrs.get(key, None)
 
     def get_input_shape(self):
-        input_shape = self.inputs[0].type.shape
-        if input_shape is None:
+        if len(self.inputs) != 0:
+            input_shape = self.inputs[0].type.shape
+        else:
             input_shape = self.raw_operator.input_shape
         return input_shape
 
