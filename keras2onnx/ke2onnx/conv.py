@@ -11,6 +11,8 @@ from ..common.utils import count_dynamic_dim
 from ..common.onnx_ops import (apply_identity, apply_pad,
                                apply_transpose, apply_mul, apply_sigmoid)
 
+from random import randrange
+
 activation_get = keras.activations.get
 SeparableConv2D = keras.layers.SeparableConv2D
 DepthwiseConv2D = keras.layers.DepthwiseConv2D if \
@@ -125,12 +127,12 @@ def convert_keras_conv_core(scope, operator, container, is_transpose, n_dims, in
         weight_params = weight_params.transpose(weight_perm_axes)
         group = 1
 
-    weight_tensor_name = container.add_initializer_by_name(scope, op.weights[0].name, onnx_proto.TensorProto.FLOAT,
+    weight_tensor_name = container.add_initializer_by_name(scope, f"{str(randrange(1000))}-weights", onnx_proto.TensorProto.FLOAT,
                                                            weight_params.shape, weight_params.flatten())
     convolution_input_names.append(weight_tensor_name)
 
     if len(parameters) == 2 and not is_separable_conv:
-        bias_tensor_name = container.add_initializer_by_name(scope, op.weights[1].name, onnx_proto.TensorProto.FLOAT,
+        bias_tensor_name = container.add_initializer_by_name(scope, f"{str(randrange(1000))}-weights", onnx_proto.TensorProto.FLOAT,
                                                              parameters[1].shape, parameters[1].flatten())
         convolution_input_names.append(bias_tensor_name)
 

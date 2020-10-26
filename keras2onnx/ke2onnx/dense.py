@@ -8,7 +8,7 @@ from .common import activation_process
 from ..proto import onnx_proto, keras
 from ..common.onnx_ops import apply_add, OnnxOperatorBuilder
 activation_get = keras.activations.get
-
+from random import randrange
 
 def convert_keras_dense(scope, operator, container):
     op = operator.raw_operator
@@ -16,7 +16,7 @@ def convert_keras_dense(scope, operator, container):
 
     # Allocate weight matrix
     weight = parameters[0]
-    weight_name = container.add_initializer_by_name(scope, op.weights[0].name, onnx_proto.TensorProto.FLOAT,
+    weight_name = container.add_initializer_by_name(scope, f"{str(randrange(1000))}-weights", onnx_proto.TensorProto.FLOAT,
                                                     weight.shape, weight.flatten())
 
     # Do a numpy matmul. If the input is 2-D, it will be a standard matrix multiplication. Otherwise, it follows Numpy's
@@ -32,7 +32,7 @@ def convert_keras_dense(scope, operator, container):
         container.add_initializer(bias_name, onnx_proto.TensorProto.FLOAT, bias.shape, bias.flatten())
     else:
         bias = parameters[1]
-        bias_name = container.add_initializer_by_name(scope, op.weights[1].name, onnx_proto.TensorProto.FLOAT,
+        bias_name = container.add_initializer_by_name(scope, f"{str(randrange(1000))}-weights", onnx_proto.TensorProto.FLOAT,
                                                       bias.shape, bias.flatten())
 
     # Add bias

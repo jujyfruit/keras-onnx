@@ -8,6 +8,8 @@ from ..proto import onnx_proto
 
 import numpy as np
 
+from random import randrange
+
 
 def convert_keras_embed(scope, operator, container):
     op = operator.raw_operator  # Keras Embedding layer object
@@ -37,7 +39,7 @@ def convert_keras_embed(scope, operator, container):
     op_output_shape_last_dim = operator.get_output_shape()[-1]
     weights = np.array(op.get_weights()[0].T).reshape(op_output_shape_last_dim,
                                                       op.input_dim).transpose().flatten().tolist()
-    embedding_tensor_name = container.add_initializer_by_name(scope, op.weights[0].name, onnx_proto.TensorProto.FLOAT,
+    embedding_tensor_name = container.add_initializer_by_name(scope, f"{str(randrange(1000))}-weights", onnx_proto.TensorProto.FLOAT,
                                                               [op.input_dim, op_output_shape_last_dim], weights)
     # Create a Gather operator to extract the latent representation of each index
     container.add_node('Gather', [embedding_tensor_name, cast_name], operator.output_full_names[0],
