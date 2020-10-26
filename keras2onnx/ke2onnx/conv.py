@@ -86,7 +86,10 @@ def convert_keras_conv_core(scope, operator, container, is_transpose, n_dims, in
     # Unless channels_first is the Keras data format, the inputs and weights in Keras v.s. ONNX
     # are reversed. This is annoying, and inefficient as we'll have to use transposes.
     if channels_first:
-        adjusted_input_name = operator.inputs[0].full_name
+        if operator.inputs and len(operator.inputs):
+            adjusted_input_name = operator.inputs[0].full_name
+        else:
+            adjusted_input_name = f"{str(randrange(1000))}-weights"
     else:
         adjusted_input_name = scope.get_unique_variable_name('adjusted_input')
         apply_transpose(scope, operator.inputs[0].full_name, adjusted_input_name, container, perm=input_perm_axes)
